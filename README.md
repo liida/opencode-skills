@@ -33,7 +33,7 @@
 - 编写、修改、审查、重构代码
 - 需要防止过度设计或无关改动
 
-### 3. `python-ninja-project-standard`
+### 3. `django-ninja-project-standard`
 负责定义 Python + Django + Django Ninja 新项目开始开发时的目录组织、文件职责与默认约定。
 
 适合：
@@ -49,14 +49,14 @@
 
 - 仓库内中大型开发任务：加载 `project-workflow`，涉及编码时同时加载 `coding-rule`
 - 小范围代码修改：优先只加载 `coding-rule`
-- 新建 Django Ninja 项目并确定起步标准：加载 `python-ninja-project-standard`；若还需要遵循仓库级流程，再补 `project-workflow`
+- 新建 Django Ninja 项目并确定起步标准：加载 `django-ninja-project-standard`；若还需要遵循仓库级流程，再补 `project-workflow`
 - 非编码问答或简单命令：通常不需要加载 skill
 
 ## 默认加载决策树
 
 ```text
 这是一个 Django Ninja 新项目起步标准任务吗？
-├─ 是 → 加载 python-ninja-project-standard
+├─ 是 → 加载 django-ninja-project-standard
 │        └─ 如果还需要遵循仓库级流程，再补 project-workflow
 └─ 否 → 这是仓库内的开发任务吗？
          ├─ 否 → 通常不需要加载 skill
@@ -78,7 +78,7 @@
 - `coding-rule`
 
 ### 新建 Django Ninja 项目
-- `python-ninja-project-standard`
+- `django-ninja-project-standard`
 - 如需同时遵循仓库级工作流，再补 `project-workflow`
 
 ## 分工原则

@@ -178,5 +178,5 @@ role: workflow
 
 ## 与其他 skill 的关系
 - 需要通用编码行为准则时，配合 coding-rule 使用。
-- 需要遵循 Python + Django Ninja 新项目开发标准时，使用 python-ninja-project-standard。
+- 需要遵循 Python + Django Ninja 新项目开发标准时，使用 django-ninja-project-standard。
 - 本 skill 负责“项目任务流程”，不负责具体技术栈脚手架。
