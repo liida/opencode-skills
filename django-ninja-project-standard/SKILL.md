@@ -194,6 +194,108 @@ apps:
 - `services.py`：业务逻辑层，负责用例编排、领域逻辑和可复用服务函数。
 - `models.py`：数据模型定义；该 app 需要持久化时创建。
 - `tests/`：该 app 的测试目录，优先放置与当前 app 对应的接口、服务、模型测试。
+
+#### Model 字段说明规范
+
+Model 的每个字段必须包含清晰的 `help_text` 和必要的 `db_index`、`unique` 等约束：
+
+```python
+class User(models.Model):
+    """用户表"""
+
+    username = models.CharField(
+        max_length=50,
+        unique=True,
+        db_index=True,
+        verbose_name="用户名",
+        help_text="用于登录的用户名，4-20 位字母数字下划线"
+    )
+    email = models.EmailField(
+        unique=True,
+        db_index=True,
+        verbose_name="邮箱",
+        help_text="有效的邮箱地址，用于接收通知"
+    )
+    password = models.CharField(
+        max_length=128,
+        verbose_name="密码",
+        help_text="加密后的密码，至少 8 位"
+    )
+    status = models.SmallIntegerField(
+        choices=UserStatus.choices,
+        default=UserStatus.PENDING,
+        verbose_name="账号状态",
+        help_text="1-正常 2-禁用 3-待审核"
+    )
+    role = models.ForeignKey(
+        "Role",
+        on_delete=models.PROTECT,
+        related_name="users",
+        verbose_name="角色",
+        help_text="关联角色表，删除时级联保护"
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="创建时间",
+        help_text="记录创建时间，UTC 时区"
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name="更新时间",
+        help_text="最后更新时间，UTC 时区"
+    )
+
+    class Meta:
+        db_table = "users"
+        verbose_name = "用户"
+        verbose_name_plural = "用户列表"
+        indexes = [
+            models.Index(fields=["username", "status"]),
+            models.Index(fields=["email", "status"]),
+        ]
+```
+
+字段说明应包含：
+
+- **verbose_name**：字段显示名称，用于 admin 和迁移
+- **help_text**：字段含义、用途、格式约束
+- **约束标记**：`unique`、`db_index`、`choices`、`default`
+- **外键关系**：`on_delete`、`related_name`
+
+#### Schema 字段说明规范
+
+Schema 的每个字段必须包含清晰的字段说明，确保 API 可自解释：
+
+```python
+class UserSchema(Schema):
+    """用户信息 Schema"""
+
+    id: int = Field(description="用户唯一标识 ID")
+    username: str = Field(description="用户名，用于登录")
+    email: str = Field(description="用户邮箱地址，用于接收通知")
+    full_name: str | None = Field(default=None, description="用户真实姓名")
+    status: int = Field(description="账号状态：1-正常 2-禁用 3-待审核")
+    created_at: datetime = Field(description="账号创建时间，ISO 8601 格式")
+    updated_at: datetime = Field(description="最后更新时间，ISO 8601 格式")
+
+
+class CreateUserRequest(Schema):
+    """创建用户请求 Schema"""
+
+    username: str = Field(description="用户名，4-20 位字母数字下划线")
+    email: EmailStr = Field(description="有效的邮箱地址")
+    password: str = Field(min_length=8, max_length=32, description="密码，至少 8 位")
+    role_id: int = Field(description="角色 ID，对应角色表主键")
+```
+
+字段说明应包含：
+
+- **字段含义**：字段代表什么数据
+- **格式约束**：如长度、格式、范围限制
+- **取值范围**：枚举值含义，如状态字段需说明每个值的意义
+- **业务规则**：如必填、可选、默认值、关联关系
+
+避免使用模糊描述如"用户 ID"、"名称"、"状态"，应写清楚"用户唯一标识 ID"、"用于登录的用户名"、"账号状态：1-正常 2-禁用"。
 - 当 `api.py`、`models.py`、`schemas.py`、`services.py` 任一文件持续膨胀、职责已明显分叉，允许改为同名目录。
 - 可拆分为：
   - `api/`
