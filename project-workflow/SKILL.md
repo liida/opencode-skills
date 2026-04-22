@@ -219,7 +219,7 @@ compatibility: opencode
 
 #### 任务前读取
 
-优先读取：`.ai/memory.md` → `AGENTS.md` → 其他记忆文件。若不存在则跳过，通过上下文检索补充。
+优先读取：`.ai/memory.md` → 其他记忆文件。若不存在则跳过，通过上下文检索补充。
 
 #### 任务后回写
 
